@@ -551,7 +551,7 @@ func (s *localizerPipeline) localizeConversations(localizeJob *localizerPipeline
 		})
 	}
 	go func() {
-		eg.Wait()
+		_ = eg.Wait()
 		close(retCh)
 	}()
 	for convID := range retCh {
@@ -752,12 +752,11 @@ func (s *localizerPipeline) localizeConversation(ctx context.Context, uid gregor
 		LocalVersion: conversationRemote.Metadata.LocalVersion,
 	}
 	conversationLocal.Info.FinalizeInfo = conversationRemote.Metadata.FinalizeInfo
-	for _, super := range conversationRemote.Metadata.Supersedes {
-		conversationLocal.Supersedes = append(conversationLocal.Supersedes, super)
-	}
-	for _, super := range conversationRemote.Metadata.SupersededBy {
-		conversationLocal.SupersededBy = append(conversationLocal.SupersededBy, super)
-	}
+
+	conversationLocal.Supersedes = append(
+		conversationLocal.Supersedes, conversationRemote.Metadata.Supersedes...)
+	conversationLocal.SupersededBy = append(
+		conversationLocal.SupersededBy, conversationRemote.Metadata.SupersededBy...)
 	if conversationRemote.ReaderInfo == nil {
 		errMsg := "empty ReaderInfo from server?"
 		conversationLocal.Error = chat1.NewConversationErrorLocal(
@@ -903,10 +902,8 @@ func (s *localizerPipeline) localizeConversation(ctx context.Context, uid gregor
 			[]chat1.MessageUnboxed{*conversationLocal.Info.SnippetMsg}); err != nil {
 			s.Debug(ctx, "failed to transform message: id: %d err: %s",
 				conversationLocal.Info.SnippetMsg.GetMessageID(), err)
-		} else {
-			if len(newMsg) > 0 {
-				conversationLocal.Info.SnippetMsg = &newMsg[0]
-			}
+		} else if len(newMsg) > 0 {
+			conversationLocal.Info.SnippetMsg = &newMsg[0]
 		}
 	}
 
@@ -1014,12 +1011,10 @@ func (s *localizerPipeline) localizeConversation(ctx context.Context, uid gregor
 		conversationLocal.GetConvID())
 	if err != nil {
 		s.Debug(ctx, "localizeConversation: failed to list bot commands: %s", err)
+	} else if len(botCommands) > 0 {
+		conversationLocal.BotCommands = bots.MakeConversationCommandGroups(botCommands)
 	} else {
-		if len(botCommands) > 0 {
-			conversationLocal.BotCommands = bots.MakeConversationCommandGroups(botCommands)
-		} else {
-			conversationLocal.BotCommands = chat1.NewConversationCommandGroupsWithNone()
-		}
+		conversationLocal.BotCommands = chat1.NewConversationCommandGroupsWithNone()
 	}
 	return conversationLocal
 }
@@ -1049,11 +1044,11 @@ func (s *localizerPipeline) checkRekeyError(ctx context.Context, fromErr error, 
 // Returns (nil, nil) if it is a different kind of error
 // Returns (nil, err) if there is an error building the ConversationErrorRekey
 func (s *localizerPipeline) checkRekeyErrorInner(ctx context.Context, fromErr error, conversationRemote chat1.Conversation, unverifiedTLFName string) (*chat1.ConversationErrorLocal, error) {
-	convErrTyp := chat1.ConversationErrorType_TRANSIENT
 	var rekeyInfo *chat1.ConversationErrorRekey
 	var ok bool
 
 	// check for rekey error type
+	var convErrTyp chat1.ConversationErrorType
 	if convErrTyp, ok = IsRekeyError(fromErr); !ok {
 		return nil, nil
 	}

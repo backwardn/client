@@ -564,12 +564,12 @@ func TestChatSearchInbox(t *testing.T) {
 
 		queries := []string{"hello", "hello, ByE"}
 		matches := []chat1.ChatSearchMatch{
-			chat1.ChatSearchMatch{
+			{
 				StartIndex: 0,
 				EndIndex:   5,
 				Match:      "hello",
 			},
-			chat1.ChatSearchMatch{
+			{
 				StartIndex: 0,
 				EndIndex:   10,
 				Match:      "hello, byE",
@@ -783,7 +783,8 @@ func TestChatSearchInbox(t *testing.T) {
 		verifySearchDone(1, false)
 
 		// DB nuke, ensure that we reindex after the search
-		g1.LocalChatDb.Nuke()
+		_, err = g1.LocalChatDb.Nuke()
+		require.NoError(t, err)
 		opts.ReindexMode = chat1.ReIndexingMode_PRESEARCH_SYNC // force reindex so we're fully up to date.
 		res = runSearch(query, opts, true /* expectedReindex*/)
 		require.Equal(t, 1, len(res.Hits))
@@ -800,7 +801,8 @@ func TestChatSearchInbox(t *testing.T) {
 
 		// Verify POSTSEARCH_SYNC
 		ictx := globals.CtxAddIdentifyMode(ctx, keybase1.TLFIdentifyBehavior_CHAT_SKIP, nil)
-		g1.LocalChatDb.Nuke()
+		_, err = g1.LocalChatDb.Nuke()
+		require.NoError(t, err)
 		err = indexer1.SelectiveSync(ictx, uid1)
 		require.NoError(t, err)
 		opts.ReindexMode = chat1.ReIndexingMode_POSTSEARCH_SYNC
@@ -894,7 +896,8 @@ func TestChatSearchInbox(t *testing.T) {
 		opts.ConvID = &convID
 		// delegate if a single conv is not fully indexed
 		query = "hello"
-		g1.LocalChatDb.Nuke()
+		_, err = g1.LocalChatDb.Nuke()
+		require.NoError(t, err)
 		res = runSearch(query, opts, false /* expectedReindex*/)
 		require.Equal(t, 1, len(res.Hits))
 		convHit = res.Hits[0]

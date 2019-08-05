@@ -67,6 +67,8 @@ func (t *UIThreadLoader) applyPagerModeIncoming(ctx context.Context, convID chat
 				Previous: oldStored.Previous,
 			}
 		}
+	default:
+		// Nothing to do for other modes.
 	}
 	return pagination
 }
@@ -95,6 +97,8 @@ func (t *UIThreadLoader) applyPagerModeOutgoing(ctx context.Context, convID chat
 			oldStored.Last = pagination.Last
 			t.convPageStatus[convID.String()] = oldStored
 		}
+	default:
+		// Nothing to do for other modes.
 	}
 }
 
