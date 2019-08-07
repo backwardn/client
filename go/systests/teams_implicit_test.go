@@ -10,6 +10,7 @@ import (
 	"golang.org/x/net/context"
 
 	"github.com/davecgh/go-spew/spew"
+	"github.com/keybase/client/go/engine"
 	"github.com/keybase/client/go/libkb"
 	"github.com/keybase/client/go/protocol/keybase1"
 	"github.com/keybase/client/go/teams"
@@ -511,4 +512,78 @@ func TestResolveSBSConsolidatedTeamWithConflict(t *testing.T) {
 	lookupTeamID, err := ann.lookupImplicitTeam(false /* create */, name, false /* public */)
 	require.NoError(t, err)
 	require.Equal(t, teamid2, lookupTeamID)
+}
+
+func TestNewSBSAfterResolvedOnce(t *testing.T) {
+	// 1. alice makes alice,bob@rooter implicit team
+	// 2. bob proves rooter
+	// 3. alice resolves implicit team to alice,bob
+	// 4. bob removes rooter proof
+	// 5. alice tries to make alice,bob@rooter again
+
+	tt := newTeamTester(t)
+	defer tt.cleanup()
+
+	ann := tt.addUser("ann")
+	bob := tt.addUser("bob")
+
+	// Create ann,bob@rooter
+	impteamName := fmt.Sprintf("%s,%s@rooter", ann.username, bob.username)
+	_, err := ann.lookupImplicitTeam(true /* create */, impteamName, false /* public */)
+	require.NoError(t, err)
+
+	// Make sure it resolves
+	teamID1, err := ann.lookupImplicitTeam(false /* create */, impteamName, false /* public */)
+	require.NoError(t, err)
+
+	// Make sure it loads.
+	teamObj1 := ann.loadTeamByID(teamID1, true /* admin */)
+	_ = teamObj1
+
+	// Bob proves rooter.
+	bob.kickTeamRekeyd()
+	bob.proveRooter()
+
+	// Wait till team2 resolves.
+	ann.pollForTeamSeqnoLinkWithLoadArgs(keybase1.LoadTeamArg{
+		ID:          teamID1,
+		ForceRepoll: true,
+	}, keybase1.Seqno(2))
+
+	// Make sure "ann,bob" resolves to the existing team.
+	impteamNameResolved := fmt.Sprintf("%s,%s", ann.username, bob.username)
+	teamID2, err := ann.lookupImplicitTeam(false /* create */, impteamNameResolved, false /* public */)
+	require.NoError(t, err)
+
+	require.Equal(t, teamID1, teamID2)
+
+	// Bob revokes rooter proof
+	{
+		serviceType := bob.tc.G.GetProofServices().GetServiceType(context.Background(), "rooter")
+		arg := libkb.NewLoadUserByNameArg(bob.tc.G, bob.username).WithPublicKeyOptional()
+		user, err := libkb.LoadUser(arg)
+		require.NoError(t, err)
+		proof := user.IDTable().GetActiveProofsFor(serviceType)
+		sigID := proof[0].GetSigID()
+
+		eng := engine.NewRevokeSigsEngine(bob.tc.G, []string{sigID.String()})
+		err = engine.RunEngine2(bob.MetaContext().WithUIs(libkb.UIs{
+			LogUI:    bob.tc.G.Log,
+			SecretUI: &libkb.TestSecretUI{Passphrase: "dummy-passphrase"},
+		}), eng)
+		require.NoError(t, err)
+	}
+
+	// Now we want to make an implicit team for ann,bob@rooter again and wait
+	// for a new owner.
+	_, err = ann.lookupImplicitTeam(true /* create */, impteamName, false /* public */)
+	require.NoError(t, err)
+	//                   ^-- Fails here with:
+	//  implicit team name mismatch: ann_a6c9a0ef0e,bob_113b8e972b != ann_a6c9a0ef0e,bob_113b8e972b@rooter
+
+	// Make sure it resolves
+	teamID3, err := ann.lookupImplicitTeam(false /* create */, impteamName, false /* public */)
+	require.NoError(t, err)
+
+	require.NotEqual(t, teamID1, teamID3)
 }
