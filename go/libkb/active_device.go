@@ -109,7 +109,10 @@ func (a *ActiveDevice) Copy(m MetaContext, src *ActiveDevice) error {
 
 func (a *ActiveDevice) SetOrClear(m MetaContext, a2 *ActiveDevice) error {
 	// Always clear, if we are also setting we set all new values.
-	a.Clear()
+	err := a.Clear()
+	if err != nil {
+		return err
+	}
 	if a2 == nil {
 		return nil
 	}
@@ -273,7 +276,10 @@ func (a *ActiveDevice) DeviceID() keybase1.DeviceID {
 func (a *ActiveDevice) DeviceType(mctx MetaContext) (string, error) {
 	if a.secretSyncer.keys == nil {
 		mctx.Debug("keys are not synced with the server for this ActiveDevice. lets do that right now")
-		a.SyncSecretsForce(mctx)
+		_, err := a.SyncSecretsForce(mctx)
+		if err != nil {
+			return "", err
+		}
 	}
 	devices, err := a.secretSyncer.Devices()
 	if err != nil {

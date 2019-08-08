@@ -375,33 +375,81 @@ func (c *ChainLink) Pack() (*jsonw.Wrapper, error) {
 	p := jsonw.NewDictionary()
 
 	if c.IsStubbed() {
-		p.SetKey("s2", jsonw.NewString(c.unpacked.outerLinkV2.EncodeStubbed()))
+		err := p.SetKey("s2", jsonw.NewString(c.unpacked.outerLinkV2.EncodeStubbed()))
+		if err != nil {
+			return nil, err
+		}
 	} else {
 		// store the payload for v2 links and local tracks
 		if c.unpacked.sigVersion == KeybaseSignatureV2 {
-			p.SetKey("payload_json", jsonw.NewString(string(c.unpacked.payloadV2)))
+			err := p.SetKey("payload_json", jsonw.NewString(string(c.unpacked.payloadV2)))
+			if err != nil {
+				return nil, err
+			}
 		} else if len(c.unpacked.payloadLocal) > 0 {
-			p.SetKey("payload_json", jsonw.NewString(string(c.unpacked.payloadLocal)))
+			err := p.SetKey("payload_json", jsonw.NewString(string(c.unpacked.payloadLocal)))
+			if err != nil {
+				return nil, err
+			}
 		}
 
-		p.SetKey("sig", jsonw.NewString(c.unpacked.sig))
-		p.SetKey("sig_id", jsonw.NewString(string(c.unpacked.sigID)))
-		p.SetKey("kid", c.unpacked.kid.ToJsonw())
-		p.SetKey("ctime", jsonw.NewInt64(c.unpacked.ctime))
-		if c.unpacked.pgpFingerprint != nil {
-			p.SetKey("fingerprint", jsonw.NewString(c.unpacked.pgpFingerprint.String()))
+		err := p.SetKey("sig", jsonw.NewString(c.unpacked.sig))
+		if err != nil {
+			return nil, err
 		}
-		p.SetKey("sig_verified", jsonw.NewBool(c.sigVerified))
-		p.SetKey("chain_verified", jsonw.NewBool(c.chainVerified))
-		p.SetKey("hash_verified", jsonw.NewBool(c.hashVerified))
-		p.SetKey("proof_text_full", jsonw.NewString(c.unpacked.proofText))
-		p.SetKey("sig_version", jsonw.NewInt(int(c.unpacked.sigVersion)))
-		p.SetKey("merkle_seqno", jsonw.NewInt64(int64(c.unpacked.firstAppearedMerkleSeqnoUnverified)))
-		p.SetKey("disk_version", jsonw.NewInt(chainLinkDiskVersion))
+		err = p.SetKey("sig_id", jsonw.NewString(string(c.unpacked.sigID)))
+		if err != nil {
+			return nil, err
+		}
+		err = p.SetKey("kid", c.unpacked.kid.ToJsonw())
+		if err != nil {
+			return nil, err
+		}
+		err = p.SetKey("ctime", jsonw.NewInt64(c.unpacked.ctime))
+		if err != nil {
+			return nil, err
+		}
+		if c.unpacked.pgpFingerprint != nil {
+			err := p.SetKey("fingerprint", jsonw.NewString(c.unpacked.pgpFingerprint.String()))
+			if err != nil {
+				return nil, err
+			}
+		}
+		err = p.SetKey("sig_verified", jsonw.NewBool(c.sigVerified))
+		if err != nil {
+			return nil, err
+		}
+		err = p.SetKey("chain_verified", jsonw.NewBool(c.chainVerified))
+		if err != nil {
+			return nil, err
+		}
+		err = p.SetKey("hash_verified", jsonw.NewBool(c.hashVerified))
+		if err != nil {
+			return nil, err
+		}
+		err = p.SetKey("proof_text_full", jsonw.NewString(c.unpacked.proofText))
+		if err != nil {
+			return nil, err
+		}
+		err = p.SetKey("sig_version", jsonw.NewInt(int(c.unpacked.sigVersion)))
+		if err != nil {
+			return nil, err
+		}
+		err = p.SetKey("merkle_seqno", jsonw.NewInt64(int64(c.unpacked.firstAppearedMerkleSeqnoUnverified)))
+		if err != nil {
+			return nil, err
+		}
+		err = p.SetKey("disk_version", jsonw.NewInt(chainLinkDiskVersion))
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if c.cki != nil {
-		p.SetKey("computed_key_infos", jsonw.NewWrapper(*c.cki))
+		err := p.SetKey("computed_key_infos", jsonw.NewWrapper(*c.cki))
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return p, nil
@@ -469,7 +517,7 @@ func (c *ChainLink) GetRevocations() []keybase1.SigID {
 		}
 	}
 
-	jsonparserw.ArrayEach(payload, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+	_ = jsonparserw.ArrayEach(payload, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
 		if s, err := keybase1.SigIDFromString(string(value), true); err == nil {
 			ret = append(ret, s)
 		}
@@ -493,7 +541,7 @@ func (c *ChainLink) GetRevokeKids() []keybase1.KID {
 		ret = append(ret, keybase1.KIDFromString(s))
 	}
 
-	jsonparserw.ArrayEach(payload, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+	_ = jsonparserw.ArrayEach(payload, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
 		ret = append(ret, keybase1.KIDFromString(string(value)))
 	}, "body", "revoke", "kids")
 

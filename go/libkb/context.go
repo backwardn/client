@@ -268,7 +268,10 @@ func (m MetaContext) WithNewProvisionalLoginContextForUser(u *User) MetaContext 
 
 func (m MetaContext) WithNewProvisionalLoginContextForUserVersionAndUsername(uv keybase1.UserVersion, un NormalizedUsername) MetaContext {
 	plc := newProvisionalLoginContextWithUserVersionAndUsername(m, uv, un)
-	m.ActiveDevice().CopyCacheToLoginContextIfForUserVersion(m, plc, uv)
+	err := m.ActiveDevice().CopyCacheToLoginContextIfForUserVersion(m, plc, uv)
+	if err != nil {
+		m.Debug("WithNewProvisionalLoginContextForUserVersionAndUsername: error %+v", err)
+	}
 	return m.WithLoginContext(plc)
 }
 
