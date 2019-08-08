@@ -204,12 +204,12 @@ func (w *WebProofChainLink) ProofText() string         { return w.proofText }
 func (w *WebProofChainLink) CheckDataJSON() *jsonw.Wrapper {
 	ret := jsonw.NewDictionary()
 	if w.protocol == "dns" {
-		ret.SetKey("protocol", jsonw.NewString(w.protocol))
-		ret.SetKey("domain", jsonw.NewString(w.hostname))
+		_ = ret.SetKey("protocol", jsonw.NewString(w.protocol))
+		_ = ret.SetKey("domain", jsonw.NewString(w.hostname))
 
 	} else {
-		ret.SetKey("protocol", jsonw.NewString(w.protocol+":"))
-		ret.SetKey("hostname", jsonw.NewString(w.hostname))
+		_ = ret.SetKey("protocol", jsonw.NewString(w.protocol+":"))
+		_ = ret.SetKey("hostname", jsonw.NewString(w.hostname))
 	}
 	return ret
 }
@@ -1756,7 +1756,10 @@ func VerifyReverseSig(g *GlobalContext, key GenericKey, path string, payload *js
 		return err
 	}
 
-	jsonCopy.SetValueAtPath(path, jsonw.NewNil())
+	err = jsonCopy.SetValueAtPath(path, jsonw.NewNil())
+	if err != nil {
+		return err
+	}
 	if p2, err = jsonCopy.Marshal(); err != nil {
 		err = ReverseSigError{fmt.Sprintf("Can't remarshal JSON statement: %s", err)}
 		return err

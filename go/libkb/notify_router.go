@@ -15,16 +15,6 @@ import (
 	context "golang.org/x/net/context"
 )
 
-type getObj struct {
-	id    ConnectionID
-	retCh chan<- keybase1.NotificationChannels
-}
-
-type setObj struct {
-	id  ConnectionID
-	val keybase1.NotificationChannels
-}
-
 // NotifyListener provides hooks for listening for when
 // notifications are called.  It is intended to simplify
 // testing notifications.

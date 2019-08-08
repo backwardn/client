@@ -142,7 +142,7 @@ func ExportProofError(pe ProofError) (ret keybase1.ProofResult) {
 }
 
 func ImportProofError(e keybase1.ProofResult) ProofError {
-	ps := keybase1.ProofStatus(e.Status)
+	ps := e.Status
 	if ps == keybase1.ProofStatus_OK {
 		return nil
 	}
@@ -489,7 +489,7 @@ func ImportStatusAsError(g *GlobalContext, s *keybase1.Status) error {
 				if err != nil && g != nil {
 					g.Log.Warning("error parsing ChatConvExistsError")
 				}
-				convID = chat1.ConversationID(bs)
+				convID = bs
 			}
 		}
 		return ChatConvExistsError{
@@ -791,7 +791,7 @@ func (a AppStatusError) ToStatus() keybase1.Status {
 func ExportTrackDiff(d TrackDiff) (res *keybase1.TrackDiff) {
 	if d != nil {
 		res = &keybase1.TrackDiff{
-			Type:          keybase1.TrackDiffType(d.GetTrackDiffType()),
+			Type:          d.GetTrackDiffType(),
 			DisplayMarkup: d.ToDisplayString(),
 		}
 	}
@@ -1776,7 +1776,7 @@ func (e IdentifiesFailedError) ToStatus() keybase1.Status {
 
 func (e IdentifySummaryError) ToStatus() keybase1.Status {
 	kvpairs := []keybase1.StringKVPair{
-		keybase1.StringKVPair{Key: "username", Value: e.username.String()},
+		{Key: "username", Value: e.username.String()},
 	}
 	for index, problem := range e.problems {
 		kvpairs = append(kvpairs, keybase1.StringKVPair{
@@ -2389,7 +2389,7 @@ func (e FeatureFlagError) ToStatus() (ret keybase1.Status) {
 	ret.Code = SCFeatureFlag
 	ret.Name = "FEATURE_FLAG"
 	ret.Desc = e.msg
-	ret.Fields = []keybase1.StringKVPair{keybase1.StringKVPair{Key: "feature", Value: string(e.feature)}}
+	ret.Fields = []keybase1.StringKVPair{{Key: "feature", Value: string(e.feature)}}
 	return ret
 }
 

@@ -35,7 +35,6 @@ type HighSigChainLoader struct {
 	leaf      *MerkleUserLeaf
 	chain     *HighSigChain
 	chainType *ChainType
-	links     ChainLinks
 	ckf       ComputedKeyFamily
 	dirtyTail *MerkleTriple
 }

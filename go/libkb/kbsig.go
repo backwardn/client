@@ -120,7 +120,7 @@ func (u *User) ToTrackingStatementPGPKeys(errp *error) *jsonw.Wrapper {
 		kd := jsonw.NewDictionary()
 		kid := k.GetKID()
 		fp := k.GetFingerprintP()
-		kd.SetKey("kid", jsonw.NewString(kid.String()))
+		_ = kd.SetKey("kid", jsonw.NewString(kid.String()))
 		if fp != nil {
 			kd.SetKey("key_fingerprint", jsonw.NewString(fp.String()))
 		}

@@ -18,7 +18,6 @@ import (
 type KeyringFile struct {
 	filename         string
 	Entities         openpgp.EntityList
-	isPublic         bool
 	indexID          map[string](*openpgp.Entity) // Map of 64-bit uppercase-hex KeyIds
 	indexFingerprint map[PGPFingerprint](*openpgp.Entity)
 	Contextified

@@ -13,8 +13,6 @@ type Session struct {
 	Contextified
 	token    string
 	csrf     string
-	inFile   bool
-	loaded   bool
 	deviceID keybase1.DeviceID
 	valid    bool
 	uid      keybase1.UID
