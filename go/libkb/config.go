@@ -162,9 +162,9 @@ func (f *JSONConfigFile) SwitchUser(nu NormalizedUsername) error {
 		val = jsonw.NewString(nu.String())
 	}
 
-	err := f.jw.SetKey("current_user", val)
-	if err != nil {
-		return err
+	setKeyErr := f.jw.SetKey("current_user", val)
+	if setKeyErr != nil {
+		return setKeyErr
 	}
 	f.userConfigWrapper.userConfig = nil
 	saveErr := f.Save()

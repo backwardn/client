@@ -541,7 +541,7 @@ func (c *ChainLink) GetRevokeKids() []keybase1.KID {
 		ret = append(ret, keybase1.KIDFromString(s))
 	}
 
-	_ = jsonparserw.ArrayEach(payload, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+	_, _ = jsonparserw.ArrayEach(payload, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
 		ret = append(ret, keybase1.KIDFromString(string(value)))
 	}, "body", "revoke", "kids")
 
