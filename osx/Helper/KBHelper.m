@@ -205,7 +205,7 @@
     NSURL *directoryURL = [NSURL fileURLWithPath:directory];
     OSStatus status = CSBackupSetItemExcluded((__bridge CFURLRef)directoryURL, YES, YES);
     if (status != noErr) {
-      NSString *msg = SecCopyErrorMessageString(status, NULL);
+      CFStringRef msg = SecCopyErrorMessageString(status, NULL);
       NSString *errorMessage = [NSString stringWithFormat:@"Error trying to exclude from backup: %@", msg];
       completion(KBMakeError(status, errorMessage), nil);
       return;
