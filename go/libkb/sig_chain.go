@@ -300,7 +300,7 @@ func (sc *SigChain) LoadServerBody(m MetaContext, body []byte, low keybase1.Seqn
 
 	numEntries := 0
 
-	jsonparserw.ArrayEach(body, func(value []byte, dataType jsonparser.ValueType, offset int, inErr error) {
+	_, err = jsonparserw.ArrayEach(body, func(value []byte, dataType jsonparser.ValueType, offset int, inErr error) {
 
 		var link *ChainLink
 		if link, err = ImportLinkFromServer(m, sc, value, selfUID); err != nil {
@@ -328,7 +328,6 @@ func (sc *SigChain) LoadServerBody(m MetaContext, body []byte, low keybase1.Seqn
 		tail = link
 		numEntries++
 	}, "sigs")
-
 	if err != nil {
 		return nil, err
 	}

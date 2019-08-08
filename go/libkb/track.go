@@ -439,7 +439,7 @@ func localTrackChainLinkFor(m MetaContext, tracker, trackee keybase1.UID, localE
 
 		if linkETime.Before(m.G().Clock().Now()) {
 			m.Debug("| expired local track, deleting")
-			removeLocalTrack(m, tracker, trackee, true)
+			_ = removeLocalTrack(m, tracker, trackee, true)
 			return nil, ErrTrackingExpired
 		}
 	}

@@ -1358,7 +1358,7 @@ func (n *NotifyRouter) HandleChatSetConvRetention(ctx context.Context, uid keyba
 	convID chat1.ConversationID, topicType chat1.TopicType, conv *chat1.InboxUIItem) {
 	n.notifyChatCommon(ctx, "ChatSetConvRetention", topicType,
 		func(ctx context.Context, cli *chat1.NotifyChatClient) {
-			cli.ChatSetConvRetention(ctx, chat1.ChatSetConvRetentionArg{
+			_ = cli.ChatSetConvRetention(ctx, chat1.ChatSetConvRetentionArg{
 				Uid:    uid,
 				ConvID: convID,
 				Conv:   conv,
@@ -1372,7 +1372,7 @@ func (n *NotifyRouter) HandleChatSetTeamRetention(ctx context.Context, uid keyba
 	teamID keybase1.TeamID, topicType chat1.TopicType, convs []chat1.InboxUIItem) {
 	n.notifyChatCommon(ctx, "ChatSetTeamRetention", topicType,
 		func(ctx context.Context, cli *chat1.NotifyChatClient) {
-			cli.ChatSetTeamRetention(ctx, chat1.ChatSetTeamRetentionArg{
+			_ = cli.ChatSetTeamRetention(ctx, chat1.ChatSetTeamRetentionArg{
 				Uid:    uid,
 				TeamID: teamID,
 				Convs:  convs,
@@ -1386,7 +1386,7 @@ func (n *NotifyRouter) HandleChatSetConvSettings(ctx context.Context, uid keybas
 	convID chat1.ConversationID, topicType chat1.TopicType, conv *chat1.InboxUIItem) {
 	n.notifyChatCommon(ctx, "ChatSetConvSettings", topicType,
 		func(ctx context.Context, cli *chat1.NotifyChatClient) {
-			cli.ChatSetConvSettings(ctx, chat1.ChatSetConvSettingsArg{
+			_ = cli.ChatSetConvSettings(ctx, chat1.ChatSetConvSettingsArg{
 				Uid:    uid,
 				ConvID: convID,
 				Conv:   conv,
@@ -1400,7 +1400,7 @@ func (n *NotifyRouter) HandleChatSubteamRename(ctx context.Context, uid keybase1
 	convIDs []chat1.ConversationID, topicType chat1.TopicType, convs []chat1.InboxUIItem) {
 	n.notifyChatCommon(ctx, "ChatSubteamRename", topicType,
 		func(ctx context.Context, cli *chat1.NotifyChatClient) {
-			cli.ChatSubteamRename(ctx, chat1.ChatSubteamRenameArg{
+			_ = cli.ChatSubteamRename(ctx, chat1.ChatSubteamRenameArg{
 				Uid:   uid,
 				Convs: convs,
 			})
@@ -1413,7 +1413,7 @@ func (n *NotifyRouter) HandleChatPromptUnfurl(ctx context.Context, uid keybase1.
 	convID chat1.ConversationID, msgID chat1.MessageID, domain string) {
 	n.notifyChatCommon(ctx, "ChatPromptUnfurl", chat1.TopicType_CHAT,
 		func(ctx context.Context, cli *chat1.NotifyChatClient) {
-			cli.ChatPromptUnfurl(ctx, chat1.ChatPromptUnfurlArg{
+			_ = cli.ChatPromptUnfurl(ctx, chat1.ChatPromptUnfurlArg{
 				Uid:    uid,
 				ConvID: convID,
 				MsgID:  msgID,

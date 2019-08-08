@@ -394,7 +394,10 @@ func createKeyFamily(g *GlobalContext, bundles []string) (*KeyFamily, error) {
 		}
 	}
 	publicKeys := jsonw.NewDictionary()
-	publicKeys.SetKey("all_bundles", allKeys)
+	err := publicKeys.SetKey("all_bundles", allKeys)
+	if err != nil {
+		return nil, err
+	}
 	return ParseKeyFamily(g, publicKeys)
 }
 

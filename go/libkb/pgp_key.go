@@ -618,7 +618,7 @@ func (k *PGPKeyBundle) GetBinaryKID() keybase1.BinaryKID {
 	// have 9 bytes of header material, to encode a 2-byte frame, rather than
 	// a 1-byte frame.
 	buf := bytes.Buffer{}
-	k.PrimaryKey.Serialize(&buf)
+	_ = k.PrimaryKey.Serialize(&buf)
 	byts := buf.Bytes()
 	hdrBytes := 8
 	if len(byts) >= 193 {

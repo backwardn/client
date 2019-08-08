@@ -35,7 +35,7 @@ func DebugDumpKey(g *GlobalContext, name string, b []byte) {
 	}
 	g.Log.Notice("DUMPKEY %s -> %s", name, tmp.Name())
 	buf := bytes.NewBuffer(b)
-	io.Copy(tmp, buf)
+	_, _ = io.Copy(tmp, buf)
 	tmp.Close()
 }
 

@@ -196,7 +196,7 @@ func safeWriteToFileOnce(g SafeWriteLogger, t SafeWriter, mode os.FileMode) (err
 	}
 	g.Debug("| Temporary file generated: %s", tmpfn)
 	defer tmp.Close()
-	defer ShredFile(tmpfn)
+	defer func() { _ = ShredFile(tmpfn) }()
 
 	g.Debug("| WriteTo %s", tmpfn)
 	n, err := t.WriteTo(tmp)

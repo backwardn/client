@@ -164,12 +164,12 @@ func (u *User) ToTrackingStatementPGPKeys(errp *error) *jsonw.Wrapper {
 
 func (u *User) ToTrackingStatementBasics(errp *error) *jsonw.Wrapper {
 	ret := jsonw.NewDictionary()
-	ret.SetKey("username", jsonw.NewString(u.name))
+	_ = ret.SetKey("username", jsonw.NewString(u.name))
 	if lastIDChange, err := u.basics.AtKey("last_id_change").GetInt(); err == nil {
-		ret.SetKey("last_id_change", jsonw.NewInt(lastIDChange))
+		_ = ret.SetKey("last_id_change", jsonw.NewInt(lastIDChange))
 	}
 	if idVersion, err := u.basics.AtKey("id_version").GetInt(); err == nil {
-		ret.SetKey("id_version", jsonw.NewInt(idVersion))
+		_ = ret.SetKey("id_version", jsonw.NewInt(idVersion))
 	}
 	return ret
 }
@@ -180,9 +180,9 @@ func (u *User) ToTrackingStatementSeqTail() *jsonw.Wrapper {
 		return jsonw.NewNil()
 	}
 	ret := jsonw.NewDictionary()
-	ret.SetKey("sig_id", jsonw.NewString(mul.SigID.ToString(true)))
-	ret.SetKey("seqno", jsonw.NewInt(int(mul.Seqno)))
-	ret.SetKey("payload_hash", jsonw.NewString(mul.LinkID.String()))
+	_ = ret.SetKey("sig_id", jsonw.NewString(mul.SigID.ToString(true)))
+	_ = ret.SetKey("seqno", jsonw.NewInt(int(mul.Seqno)))
+	_ = ret.SetKey("payload_hash", jsonw.NewString(mul.LinkID.String()))
 	return ret
 }
 
@@ -232,7 +232,7 @@ func (u *User) ToTrackingStatement(w *jsonw.Wrapper, outcome *IdentifyOutcome) (
 
 func (u *User) ToUntrackingStatementBasics() *jsonw.Wrapper {
 	ret := jsonw.NewDictionary()
-	ret.SetKey("username", jsonw.NewString(u.name))
+	_ = ret.SetKey("username", jsonw.NewString(u.name))
 	return ret
 }
 
@@ -1024,7 +1024,10 @@ func PerUserKeyProofReverseSigned(m MetaContext, me *User, perUserKeySeed PerUse
 
 	// Make sig
 	jw := forward.J
-	jw.SetValueAtPath("body.per_user_key.reverse_sig", jsonw.NewString(reverseSig))
+	err = jw.SetValueAtPath("body.per_user_key.reverse_sig", jsonw.NewString(reverseSig))
+	if err != nil {
+		return nil, err
+	}
 	sig, sigID, linkID, err := SignJSON(jw, signer)
 	if err != nil {
 		return nil, err

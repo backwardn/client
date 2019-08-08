@@ -72,7 +72,7 @@ func isBase64KeybaseV0Sig(s string) bool {
 	}
 	var mh codec.MsgpackHandle
 	var encoded []byte
-	codec.NewEncoderBytes(&encoded, &mh).Encode(firstKey)
+	_ = codec.NewEncoderBytes(&encoded, &mh).Encode(firstKey)
 	return bytes.HasPrefix(buf[1:], encoded)
 }
 

@@ -180,7 +180,7 @@ func (t SigchainV2Type) TeamAllowStubWithAdminFlag(isAdmin bool) bool {
 
 // OuterLinkV2 is the second version of Keybase sigchain signatures.
 type OuterLinkV2 struct {
-	_struct  bool           `codec:",toarray"`
+	_struct  bool           `codec:",toarray"` //nolint
 	Version  SigVersion     `codec:"version"`
 	Seqno    keybase1.Seqno `codec:"seqno"`
 	Prev     LinkID         `codec:"prev"`

@@ -97,7 +97,7 @@ type keyPseudonymReq struct {
 
 // keyPseudonymContents is the data packed inside the HMAC
 type keyPseudonymContents struct {
-	_struct     bool `codec:",toarray"`
+	_struct     bool `codec:",toarray"` //nolint
 	Version     int
 	ID          [16]byte                 // keybase1.UserOrTeamId as a byte array
 	Application keybase1.TeamApplication // int
