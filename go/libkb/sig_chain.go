@@ -211,7 +211,7 @@ func (sc *SigChain) VerifiedChainLinks(fp PGPFingerprint) (ret ChainLinks) {
 		start = i
 	}
 	if start >= 0 {
-		ret = ChainLinks(sc.chainLinks[start:])
+		ret = sc.chainLinks[start:]
 	}
 	return ret
 }
@@ -981,7 +981,7 @@ func verifySigsAndComputeKeysHistorical(m MetaContext, uid keybase1.UID, usernam
 
 func (sc *SigChain) GetLinkFromSeqno(seqno keybase1.Seqno) *ChainLink {
 	for _, link := range sc.chainLinks {
-		if link.GetSeqno() == keybase1.Seqno(seqno) {
+		if link.GetSeqno() == seqno {
 			return link
 		}
 	}

@@ -406,7 +406,10 @@ func (k *Keyrings) GetSecretKeyWithPrompt(m MetaContext, arg SecretKeyPromptArg)
 	key, _, err = k.GetSecretKeyAndSKBWithPrompt(m, arg)
 
 	if key != nil && err == nil {
-		setCachedSecretKey(m, arg.Ska, key, nil)
+		err := setCachedSecretKey(m, arg.Ska, key, nil)
+		if err != nil {
+			return key, err
+		}
 	}
 
 	return key, err

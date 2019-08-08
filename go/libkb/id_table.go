@@ -283,8 +283,8 @@ func (s *SocialProofChainLink) DisplayCheck(m MetaContext, ui IdentifyUI, lcr Li
 
 func (s *SocialProofChainLink) CheckDataJSON() *jsonw.Wrapper {
 	ret := jsonw.NewDictionary()
-	ret.SetKey("username", jsonw.NewString(s.username))
-	ret.SetKey("name", jsonw.NewString(s.service))
+	_ = ret.SetKey("username", jsonw.NewString(s.username))
+	_ = ret.SetKey("name", jsonw.NewString(s.service))
 	return ret
 }
 

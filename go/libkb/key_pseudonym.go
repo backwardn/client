@@ -150,7 +150,10 @@ func MakeKeyPseudonym(info KeyPseudonymInfo) (KeyPseudonym, error) {
 	}
 
 	mac := hmac.New(sha256.New, info.Nonce[:])
-	mac.Write(buf)
+	_, err := mac.Write(buf)
+	if err != nil {
+		return [32]byte{}, err
+	}
 	hmac := MakeByte32(mac.Sum(nil))
 	return hmac, nil
 }
