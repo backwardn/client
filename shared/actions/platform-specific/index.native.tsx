@@ -26,7 +26,7 @@ import * as PushNotifications from 'react-native-push-notification'
 import {Permissions} from 'react-native-unimodules'
 import {isIOS, isAndroid} from '../../constants/platform'
 import pushSaga, {getStartupDetailsFromInitialPush} from './push.native'
-import {TypedState} from '../../util/container'
+import {TypedActions, TypedState} from '../../util/container'
 import * as Contacts from 'expo-contacts'
 import {phoneUtil, PhoneNumberFormat, ValidationResult} from '../../util/phone-numbers'
 import {launchImageLibraryAsync} from '../../util/expo-image-picker'
@@ -544,7 +544,7 @@ async function manageContactsCache(
     return ret
   }, [])
   logger.info(`Importing ${mapped.length} contacts.`)
-  const actions: Array<any> = []
+  const actions: Array<TypedActions> = []
   try {
     const newlyResolved = await RPCTypes.contactsSaveContactListRpcPromise({contacts: mapped})
     logger.info(`Success`)
