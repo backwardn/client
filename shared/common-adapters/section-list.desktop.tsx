@@ -229,6 +229,8 @@ class SectionList extends React.Component<Props, State> {
           style={Styles.collapseStyles([styles.scroll, this.props.style])}
           onScroll={this._onScroll}
         >
+          {/* TODO ListHeaderComponent ought to support a component (as opposed to element) for parity with native SectionList */}
+          {this.props.ListHeaderComponent}
           {/*
           // @ts-ignore */}
           <ReactList

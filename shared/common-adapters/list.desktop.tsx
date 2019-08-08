@@ -98,6 +98,8 @@ class List extends PureComponent<Props<any>> {
             style={collapseStyles([styles.innerDiv, this.props.contentContainerStyle])}
             onScroll={this.props.onEndReached ? this._onScroll : undefined}
           >
+            {/* TODO ListHeaderComponent ought to support a component (as opposed to element) for parity with native FlatList */}
+            {this.props.ListHeaderComponent}
             <ReactList
               ref={this._setListRef}
               useTranslate3d={false}
